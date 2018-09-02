@@ -1,31 +1,40 @@
 package com.kuldeep.redbustest;
 
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
+import objectrepository.BusSearchResult;
 import objectrepository.HomePage;
 
-public class HomePageTest extends BaseTest{
-	
-	
-	@BeforeTest
-	public void setup() {
-		initializeWebDriver();
-	}
+public class BusSearchResultTest extends HomePageTest {
 
 	@Test
 	public void getHomePage() throws FileNotFoundException, IOException {
+		Properties properties = new Properties();
+		properties.load(new FileInputStream(
+				"C:\\Users\\KULDEEP\\eclipse-workspace\\redbustest\\src\\test\\java\\com\\kuldeep\\redbustest\\test.properties"));
+		System.setProperty("webdriver.chrome.driver", "C:\\Kuldeep\\chromedriver.exe");
+		Map<String, Object> prefs = new HashMap<String, Object>();
+		prefs.put("profile.default_content_setting_values.notifications", 2);
+		ChromeOptions options = new ChromeOptions();
+		options.setExperimentalOption("prefs", prefs);
+		WebDriver driver = new ChromeDriver(options);
+
 		driver.get("https://www.redbus.in/");
 		driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
 
@@ -46,11 +55,9 @@ public class HomePageTest extends BaseTest{
 
 		hp.getSearchbuses().click();
 
-	}
-	
-	@AfterTest
-	public void cleanup() {
-		driver.quit();
+		BusSearchResult bsr = new BusSearchResult(driver);
+		bsr.getViewseat().get(0).click();
+
 	}
 
 	private void selectDateFromCalender(WebDriver driver, By by, String month, String date) {
@@ -77,9 +84,7 @@ public class HomePageTest extends BaseTest{
 			if (date.equalsIgnoreCase(elements.getText())) {
 				elements.click();
 				break;
-
 			}
-
 		}
 
 	}
